@@ -54,9 +54,44 @@ void MainWindow::on_set_alphabet_button_clicked()
     this->hide();
 }
 
+bool string_check(std::string s1, std::string s2) {
+    for (auto e : s1) {
+        if (s2.find(e) == std::string::npos) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void MainWindow::rend() {
+    for (int i = 0; i < 11; ++i) {
+        this->tape[i]->setText(tape_data[pos + i]);
+    }
+}
 
 void MainWindow::on_set_string_button_clicked()
 {
+    std::string string = ui->lineEdit->text().toStdString();
+    if (string_check(string, main_alphabet.toStdString())) {
+        tape_data.resize(2e5, "Λ");
+        tape.push_back(ui->label_1);
+        tape.push_back(ui->label_2);
+        tape.push_back(ui->label_3);
+        tape.push_back(ui->label_4);
+        tape.push_back(ui->label_5);
+        tape.push_back(ui->label_6);
+        tape.push_back(ui->label_7);
+        tape.push_back(ui->label_8);
+        tape.push_back(ui->label_9);
+        tape.push_back(ui->label_10);
+        tape.push_back(ui->label_11);
+        for (auto e : string) {
+            tape_data[pos] = e;
+            ++pos;
+        }
+        pos = 1e5;
+        rend();
+    }
 
 }
 

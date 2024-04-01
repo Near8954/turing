@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include "dialog.h"
 #include <QDebug>
+#include <QLabel>
+#include <QVector>
+#include <vector>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -29,10 +32,15 @@ private slots:
 
     void on_delete_state_clicked();
 
+    void rend();
+
 private:
     Ui::MainWindow *ui;
     Dialog *alphabet_form;
     QString main_alphabet, additional_alphabet;
     int state_cnt = 0;
+    std::vector<QLabel*> tape;
+    std::vector<QString> tape_data;
+    int pos = 1e5;
 };
 #endif // MAINWINDOW_H
