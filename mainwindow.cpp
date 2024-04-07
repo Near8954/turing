@@ -7,7 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    animation = new QPropertyAnimation(ui->label, "geometry");
+    ui->step_button->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -76,6 +77,7 @@ void MainWindow::rend() {
 void MainWindow::on_set_string_button_clicked()
 {
     std::string string = ui->lineEdit->text().toStdString();
+    ui->step_button->setEnabled(true);
     ui->lineEdit_2->setText(main_alphabet);
     if (string_check(string, main_alphabet.toStdString())) {
         tape_data.resize(2e5, "Λ");
@@ -124,6 +126,27 @@ bool MainWindow::table_check()
     return true;
 }
 
+void MainWindow::move_right()
+{
+    if (head_pos == 10)
+    {
+        animation->setDuration(50);
+        animation->setStartValue(ui->label->geometry());
+        animation->setEndValue(QRect(20, 160, 60, 60));
+        animation->start();
+        head_pos = 0;
+        pos += 11;
+        rend();
+    } else {
+        head_pos++;
+        animation->setDuration(speed);
+        animation->setStartValue(ui->label->geometry());
+        animation->setEndValue(QRect(ui->label->pos().x() + 60, 160, 60, 60));
+        animation->start();
+    }
+
+}
+
 void MainWindow::on_step_button_clicked()
 {
     ui->lineEdit_2->setText(tape_data[pos]);
@@ -137,6 +160,7 @@ void MainWindow::on_step_button_clicked()
         }
         if (list[1] != "") {
             if (list[1] == "R") {
+                move_right();
                 ++header_pos;
             } else {
                 --header_pos;

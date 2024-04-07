@@ -5,8 +5,11 @@
 #include "dialog.h"
 #include <QDebug>
 #include <QLabel>
+#include <QPropertyAnimation>
 #include <QVector>
 #include <vector>
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -20,6 +23,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
 public slots:
     void slot(QString main_alphabet, QString additional_alphabet);
     void table();
@@ -34,6 +38,8 @@ private slots:
 
     void rend();
 
+    void move_right();
+
     bool table_check();
 
     void on_step_button_clicked();
@@ -46,10 +52,13 @@ private:
     std::vector<QLabel*> tape;
     std::vector<QString> tape_data;
     int pos = 1e5;
+    int head_pos = 0;
     int state = 0;
     QStringList hor_header;
     QStringList ver_header;
     int header_pos = 1e5;
+    QPropertyAnimation *animation;
+    int speed = 500;
 
 };
 #endif // MAINWINDOW_H
