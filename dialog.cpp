@@ -17,6 +17,9 @@ Dialog::~Dialog()
 bool check(QString s1, QString s2) {
     std::string std_s1 = s1.toStdString();
     std::string std_s2 = s2.toStdString();
+    if (std_s2.empty() && !std_s1.empty()) {
+        return true;
+    }
     std::set<char> st;
     for (auto e : std_s1) {
         st.insert(e);

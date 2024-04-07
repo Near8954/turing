@@ -46,6 +46,10 @@ private:
     std::vector<QLabel*> tape;
     std::vector<QString> tape_data;
     int pos = 1e5;
-    int state = 1;
+    int state = 0;
+    QStringList hor_header;
+    QStringList ver_header;
+    int header_pos = 1e5;
+
 };
 #endif // MAINWINDOW_H

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -39,10 +40,13 @@ void MainWindow::table()
         tmp += e;
         lst.push_back(QString::fromStdString(tmp));
     }
+    ver_header.push_back(QString::fromStdString("q" + std::to_string(state_cnt)));
     ui->tableWidget->setColumnCount(std_main.size() + std_additional.size() + 1);
     ui->tableWidget->setRowCount(1);
+    hor_header = lst;
+    ui->tableWidget->setHorizontalHeaderLabels(hor_header);
+    ui->tableWidget->setVerticalHeaderLabels(ver_header);
     ++state_cnt;
-    ui->tableWidget->setHorizontalHeaderLabels(lst);
 }
 
 void MainWindow::on_set_alphabet_button_clicked()
@@ -72,6 +76,7 @@ void MainWindow::rend() {
 void MainWindow::on_set_string_button_clicked()
 {
     std::string string = ui->lineEdit->text().toStdString();
+    ui->lineEdit_2->setText(main_alphabet);
     if (string_check(string, main_alphabet.toStdString())) {
         tape_data.resize(2e5, "Λ");
         tape.push_back(ui->label_1);
@@ -92,19 +97,22 @@ void MainWindow::on_set_string_button_clicked()
         pos = 1e5;
         rend();
     }
-
 }
 
 
 void MainWindow::on_add_state_clicked()
 {
+    ver_header.push_back(QString::fromStdString("q" + std::to_string(state_cnt)));
     ui->tableWidget->insertRow(state_cnt++);
+    ui->tableWidget->setVerticalHeaderLabels(ver_header);
+
 }
 
 
 void MainWindow::on_delete_state_clicked()
 {
     ui->tableWidget->removeRow(--state_cnt);
+    ver_header.pop_back();
 }
 
 bool MainWindow::table_check()
@@ -118,8 +126,32 @@ bool MainWindow::table_check()
 
 void MainWindow::on_step_button_clicked()
 {
+    ui->lineEdit_2->setText(tape_data[pos]);
+
     if (table_check()) {
-        ui->tableWidget->horizontalHeaderItem();
+        QString s = ui->tableWidget->item(state, hor_header.indexOf(tape_data[header_pos]))->text();
+        QStringList list = s.split(',');
+        qDebug() << list[0];
+        if (list[0] != "") {
+            tape_data [header_pos] = list[0];
+        }
+        if (list[1] != "") {
+            if (list[1] == "R") {
+                ++header_pos;
+            } else {
+                --header_pos;
+            }
+        }
+        if (list[2] != "") {
+            QString st_num;
+            for (auto e : list[2]) {
+                if (e.isDigit()) {
+                    st_num += e;
+                }
+            }
+            state = st_num.toInt();
+        }
+        rend();
     }
 }
 
