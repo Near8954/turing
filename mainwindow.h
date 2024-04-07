@@ -34,6 +34,10 @@ private slots:
 
     void rend();
 
+    bool table_check();
+
+    void on_step_button_clicked();
+
 private:
     Ui::MainWindow *ui;
     Dialog *alphabet_form;
@@ -42,5 +46,6 @@ private:
     std::vector<QLabel*> tape;
     std::vector<QString> tape_data;
     int pos = 1e5;
+    int state = 1;
 };
 #endif // MAINWINDOW_H

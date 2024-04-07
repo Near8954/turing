@@ -107,3 +107,19 @@ void MainWindow::on_delete_state_clicked()
     ui->tableWidget->removeRow(--state_cnt);
 }
 
+bool MainWindow::table_check()
+{
+    QList<QTableWidgetItem* > lst = ui->tableWidget->findItems("!", Qt::MatchContains);
+    if (lst.size() == 0) {
+        return false;
+    }
+    return true;
+}
+
+void MainWindow::on_step_button_clicked()
+{
+    if (table_check()) {
+        ui->tableWidget->horizontalHeaderItem();
+    }
+}
+
