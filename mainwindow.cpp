@@ -77,10 +77,11 @@ void MainWindow::rend() {
 void MainWindow::on_set_string_button_clicked()
 {
     std::string string = ui->lineEdit->text().toStdString();
-    ui->step_button->setEnabled(true);
+
     ui->lineEdit_2->setText(main_alphabet);
     if (string_check(string, main_alphabet.toStdString())) {
         tape_data.resize(2e5, "Λ");
+        ui->step_button->setEnabled(true);
         tape.push_back(ui->label_1);
         tape.push_back(ui->label_2);
         tape.push_back(ui->label_3);
@@ -123,6 +124,28 @@ bool MainWindow::table_check()
     if (lst.size() == 0) {
         return false;
     }
+    for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
+        for (int j = 0; j < ui->tableWidget->columnCount(); ++j) {
+            QString item = ui->tableWidget->item(i, j)->text();
+            if (item.size() == 0) {
+                continue;
+            }
+            if (item.count(',') != 2) {
+                return false;
+            }
+            QStringList list = item.split(',');
+            if (list[0].size() > 1) {
+                return false;
+            }
+            if (list[0].size() == 0) {
+                continue;
+            }
+            if (main_alphabet.toStdString().find(list[0].toStdString()) == std::string::npos &&
+                additional_alphabet.toStdString().find(list[0].toStdString()) == std::string::npos) {
+                return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -137,22 +160,50 @@ void MainWindow::move_right()
         head_pos = 0;
         pos += 11;
         rend();
-    } else {
+    }
+    else
+    {
         head_pos++;
         animation->setDuration(speed);
         animation->setStartValue(ui->label->geometry());
         animation->setEndValue(QRect(ui->label->pos().x() + 60, 160, 60, 60));
         animation->start();
     }
-
 }
+
+void MainWindow::move_left()
+{
+    if (head_pos == 0)
+    {
+        animation->setDuration(50);
+        animation->setStartValue(ui->label->geometry());
+        animation->setEndValue(QRect(620, 160, 60, 60));
+        animation->start();
+        head_pos = 10;
+        pos -= 11;
+        rend();
+    }
+    else
+    {
+        head_pos--;
+        animation->setDuration(speed);
+        animation->setStartValue(ui->label->geometry());
+        animation->setEndValue(QRect(ui->label->pos().x() - 60, 160, 60, 60));
+        animation->start();
+    }
+}
+
 
 void MainWindow::on_step_button_clicked()
 {
-    ui->lineEdit_2->setText(tape_data[pos]);
-
     if (table_check()) {
         QString s = ui->tableWidget->item(state, hor_header.indexOf(tape_data[header_pos]))->text();
+        ui->lineEdit_2->setText(QString::fromStdString(std::to_string(prev_row)));
+        int tmp = hor_header.indexOf(tape_data[header_pos]);
+        if (prev_row != -1 && prev_col != -1) {
+            ui->tableWidget->item(prev_row, prev_col)->setBackground(Qt::white);
+        }
+        ui->tableWidget->item(state, hor_header.indexOf(tape_data[header_pos]))->setBackground(Qt::yellow);
         QStringList list = s.split(',');
         qDebug() << list[0];
         if (list[0] != "") {
@@ -163,6 +214,7 @@ void MainWindow::on_step_button_clicked()
                 move_right();
                 ++header_pos;
             } else {
+                move_left();
                 --header_pos;
             }
         }
@@ -175,7 +227,34 @@ void MainWindow::on_step_button_clicked()
             }
             state = st_num.toInt();
         }
+        prev_row = state;
+        prev_col = tmp;
         rend();
     }
+}
+
+
+void MainWindow::on_stop_button_clicked()
+{
+    pos = 1e5;
+    header_pos = 1e5;
+    rend();
+    animation->setDuration(50);
+    animation->setStartValue(ui->label->geometry());
+    animation->setEndValue(QRect(20, 160, 60, 60));
+    animation->start();
+    head_pos = 0;
+}
+
+
+void MainWindow::on_start_button_clicked()
+{
+
+}
+
+
+void MainWindow::on_pause_button_clicked()
+{
+
 }
 

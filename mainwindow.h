@@ -40,9 +40,17 @@ private slots:
 
     void move_right();
 
+    void move_left();
+
     bool table_check();
 
     void on_step_button_clicked();
+
+    void on_stop_button_clicked();
+
+    void on_start_button_clicked();
+
+    void on_pause_button_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -54,11 +62,14 @@ private:
     int pos = 1e5;
     int head_pos = 0;
     int state = 0;
+    int prev_row = -1;
+    int prev_col = -1;
     QStringList hor_header;
     QStringList ver_header;
     int header_pos = 1e5;
     QPropertyAnimation *animation;
     int speed = 500;
+
 
 };
 #endif // MAINWINDOW_H
