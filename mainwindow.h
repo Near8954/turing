@@ -7,7 +7,9 @@
 #include <QLabel>
 #include <QPropertyAnimation>
 #include <QVector>
+#include <QTimer>
 #include <vector>
+#include <map>
 
 
 QT_BEGIN_NAMESPACE
@@ -52,6 +54,10 @@ private slots:
 
     void on_pause_button_clicked();
 
+    void on_increase_speed_clicked();
+
+    void on_reduce_speed_clicked();
+
 private:
     Ui::MainWindow *ui;
     Dialog *alphabet_form;
@@ -68,8 +74,8 @@ private:
     QStringList ver_header;
     int header_pos = 1e5;
     QPropertyAnimation *animation;
-    int speed = 500;
-
-
+    int speed = 1000;
+    QTimer timer;
+    std::map<char, QStringList> mp;
 };
 #endif // MAINWINDOW_H

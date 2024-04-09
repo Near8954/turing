@@ -7,8 +7,14 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(&timer, SIGNAL(timeout()), SLOT(on_step_button_clicked()));
     animation = new QPropertyAnimation(ui->label, "geometry");
     ui->step_button->setEnabled(false);
+    ui->stop_button->setEnabled(false);
+    ui->pause_button->setEnabled(false);
+    ui->start_button->setEnabled(false);
+    ui->set_string_button->setEnabled(false);
+    ui->lineEdit_2->hide();
 }
 
 MainWindow::~MainWindow()
@@ -41,6 +47,9 @@ void MainWindow::table()
         tmp += e;
         lst.push_back(QString::fromStdString(tmp));
     }
+    if (!ver_header.empty() && !hor_header.empty()) {
+
+    }
     ver_header.push_back(QString::fromStdString("q" + std::to_string(state_cnt)));
     ui->tableWidget->setColumnCount(std_main.size() + std_additional.size() + 1);
     ui->tableWidget->setRowCount(1);
@@ -57,6 +66,7 @@ void MainWindow::on_set_alphabet_button_clicked()
     connect(alphabet_form, &Dialog::create_table, this, &MainWindow::table);
     alphabet_form->show();
     this->hide();
+    ui->set_string_button->setEnabled(true);
 }
 
 bool string_check(std::string s1, std::string s2) {
@@ -77,7 +87,8 @@ void MainWindow::rend() {
 void MainWindow::on_set_string_button_clicked()
 {
     std::string string = ui->lineEdit->text().toStdString();
-
+    ui->start_button->setEnabled(true);
+    ui->stop_button->setEnabled(true);
     ui->lineEdit_2->setText(main_alphabet);
     if (string_check(string, main_alphabet.toStdString())) {
         tape_data.resize(2e5, "Λ");
@@ -126,10 +137,10 @@ bool MainWindow::table_check()
     }
     for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
         for (int j = 0; j < ui->tableWidget->columnCount(); ++j) {
-            QString item = ui->tableWidget->item(i, j)->text();
-            if (item.size() == 0) {
-                continue;
+            if (ui->tableWidget->item(i, j) == 0) {
+                return false;
             }
+            QString item = ui->tableWidget->item(i, j)->text();
             if (item.count(',') != 2) {
                 return false;
             }
@@ -164,7 +175,7 @@ void MainWindow::move_right()
     else
     {
         head_pos++;
-        animation->setDuration(speed);
+        animation->setDuration(speed - speed / 10);
         animation->setStartValue(ui->label->geometry());
         animation->setEndValue(QRect(ui->label->pos().x() + 60, 160, 60, 60));
         animation->start();
@@ -186,7 +197,7 @@ void MainWindow::move_left()
     else
     {
         head_pos--;
-        animation->setDuration(speed);
+        animation->setDuration(speed - speed / 10);
         animation->setStartValue(ui->label->geometry());
         animation->setEndValue(QRect(ui->label->pos().x() - 60, 160, 60, 60));
         animation->start();
@@ -218,6 +229,9 @@ void MainWindow::on_step_button_clicked()
                 --header_pos;
             }
         }
+        if (list[2] == "!") {
+            on_pause_button_clicked();
+        }
         if (list[2] != "") {
             QString st_num;
             for (auto e : list[2]) {
@@ -244,17 +258,40 @@ void MainWindow::on_stop_button_clicked()
     animation->setEndValue(QRect(20, 160, 60, 60));
     animation->start();
     head_pos = 0;
+    timer.stop();
+    if (prev_col != -1 && prev_row != -1) {
+        ui->tableWidget->item(prev_row, prev_col)->setBackground(Qt::white);
+    }
+    ui->tableWidget->setEnabled(true);
 }
 
 
 void MainWindow::on_start_button_clicked()
 {
-
+    timer.start(speed);
+    ui->pause_button->setEnabled(true);
+    ui->tableWidget->setEnabled(false);
 }
 
 
 void MainWindow::on_pause_button_clicked()
 {
+    timer.stop();
+    ui->tableWidget->setEnabled(true);
+    ui->pause_button->setEnabled(false);
+}
 
+
+void MainWindow::on_increase_speed_clicked()
+{
+    if (speed > 100) {
+        speed -= 100;
+    }
+}
+
+
+void MainWindow::on_reduce_speed_clicked()
+{
+    speed += 100;
 }
 
