@@ -67,6 +67,8 @@ void MainWindow::on_set_alphabet_button_clicked()
     alphabet_form->show();
     this->hide();
     ui->set_string_button->setEnabled(true);
+    ui->tableWidget->clear();
+    ui->lineEdit->setEnabled(true);
 }
 
 bool string_check(std::string s1, std::string s2) {
@@ -88,6 +90,8 @@ void MainWindow::on_set_string_button_clicked()
 {
     std::string string = ui->lineEdit->text().toStdString();
     ui->start_button->setEnabled(true);
+    ui->lineEdit->setEnabled(false);
+    ui->set_string_button->setEnabled(false);
     ui->stop_button->setEnabled(true);
     ui->lineEdit_2->setText(main_alphabet);
     if (string_check(string, main_alphabet.toStdString())) {
@@ -207,7 +211,7 @@ void MainWindow::move_left()
 
 void MainWindow::on_step_button_clicked()
 {
-    if (table_check()) {
+    if (table_check() && f) {
         QString s = ui->tableWidget->item(state, hor_header.indexOf(tape_data[header_pos]))->text();
         ui->lineEdit_2->setText(QString::fromStdString(std::to_string(prev_row)));
         int tmp = hor_header.indexOf(tape_data[header_pos]);
@@ -263,14 +267,24 @@ void MainWindow::on_stop_button_clicked()
         ui->tableWidget->item(prev_row, prev_col)->setBackground(Qt::white);
     }
     ui->tableWidget->setEnabled(true);
+    ui->lineEdit->setEnabled(true);
+    ui->set_string_button->setEnabled(true);
+    ui->set_alphabet_button->setEnabled(true);
+    ui->add_state->setEnabled(true);
+    ui->delete_state->setEnabled(true);
 }
 
 
 void MainWindow::on_start_button_clicked()
 {
+    f = true;
     timer.start(speed);
     ui->pause_button->setEnabled(true);
     ui->tableWidget->setEnabled(false);
+    ui->set_string_button->setEnabled(false);
+    ui->set_alphabet_button->setEnabled(false);
+    ui->add_state->setEnabled(false);
+    ui->delete_state->setEnabled(false);
 }
 
 
@@ -279,6 +293,7 @@ void MainWindow::on_pause_button_clicked()
     timer.stop();
     ui->tableWidget->setEnabled(true);
     ui->pause_button->setEnabled(false);
+    f = false;
 }
 
 

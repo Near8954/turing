@@ -77,5 +77,6 @@ private:
     int speed = 1000;
     QTimer timer;
     std::map<char, QStringList> mp;
+    bool f = true;
 };
 #endif // MAINWINDOW_H
