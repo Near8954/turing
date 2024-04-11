@@ -159,6 +159,22 @@ bool MainWindow::table_check()
                 additional_alphabet.toStdString().find(list[0].toStdString()) == std::string::npos) {
                 return false;
             }
+            std::string st;
+            if (list[2].size() != 0) {
+                if (list[2][0] != 'q') {
+                    return false;
+                }
+                for (int i = 0; i < list[2].size(); ++i) {
+                    if (std::isdigit(list[2][i].toLatin1())) {
+                        st += list[2][i].toLatin1();
+                    } else if (i != 0) {
+                        return false;
+                    }
+                }
+            }
+            if (std::stoi(st) >= ui->tableWidget->rowCount()) {
+                return false;
+            }
         }
     }
     return true;
