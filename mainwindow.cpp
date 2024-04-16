@@ -61,6 +61,7 @@ void MainWindow::table()
 
 void MainWindow::on_set_alphabet_button_clicked()
 {
+    state_cnt = 0;
     alphabet_form = new Dialog(this);
     connect(alphabet_form, &Dialog::signal, this, &MainWindow::slot);
     connect(alphabet_form, &Dialog::create_table, this, &MainWindow::table);
@@ -95,7 +96,7 @@ void MainWindow::on_set_string_button_clicked()
     ui->stop_button->setEnabled(true);
     ui->lineEdit_2->setText(main_alphabet);
     if (string_check(string, main_alphabet.toStdString())) {
-        tape_data.resize(2e5, "Λ");
+        tape_data.assign(2e5, "Λ");
         ui->step_button->setEnabled(true);
         tape.push_back(ui->label_1);
         tape.push_back(ui->label_2);
@@ -123,14 +124,15 @@ void MainWindow::on_add_state_clicked()
     ver_header.push_back(QString::fromStdString("q" + std::to_string(state_cnt)));
     ui->tableWidget->insertRow(state_cnt++);
     ui->tableWidget->setVerticalHeaderLabels(ver_header);
-
 }
 
 
 void MainWindow::on_delete_state_clicked()
 {
-    ui->tableWidget->removeRow(--state_cnt);
-    ver_header.pop_back();
+    if (state_cnt > 1) {
+        ui->tableWidget->removeRow(--state_cnt);
+        ver_header.pop_back();
+    }
 }
 
 bool MainWindow::table_check()
@@ -172,7 +174,7 @@ bool MainWindow::table_check()
                     }
                 }
             }
-            if (std::stoi(st) >= ui->tableWidget->rowCount()) {
+            if (!st.empty() && std::stoi(st) >= ui->tableWidget->rowCount()) {
                 return false;
             }
         }
@@ -235,6 +237,8 @@ void MainWindow::on_step_button_clicked()
             ui->tableWidget->item(prev_row, prev_col)->setBackground(Qt::white);
         }
         ui->tableWidget->item(state, hor_header.indexOf(tape_data[header_pos]))->setBackground(Qt::yellow);
+        prev_row = state;
+        prev_col = tmp;
         QStringList list = s.split(',');
         qDebug() << list[0];
         if (list[0] != "") {
@@ -261,8 +265,6 @@ void MainWindow::on_step_button_clicked()
             }
             state = st_num.toInt();
         }
-        prev_row = state;
-        prev_col = tmp;
         rend();
     }
 }
